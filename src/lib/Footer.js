@@ -29,19 +29,22 @@ class Footer extends React.PureComponent {
     return style
   }
 
-  constructor () {
+  constructor() {
     super(...arguments)
     this.wrapperRef = React.createRef(null)
   }
 
-  render () {
+  render() {
     const {
       children, style, ...props
     } = this.props
 
     return (
-      <div ref={this.wrapperRef} style={style} className={classNames('taro-virtual-list--footer', props.className)}>
-        {children}
+      <div
+        ref={ this.wrapperRef }
+        style={ style }
+        className={ classNames('taro-virtual-list--footer', props.className) }>
+        { children }
       </div>
     )
   }

@@ -1,4 +1,4 @@
-export function throttle (fn, threshhold, scope) {
+export function throttle(fn, threshhold, scope) {
   threshhold || (threshhold = 250)
   let last, deferTimer
   return function () {
@@ -23,7 +23,7 @@ export const isNumber = obj => {
   return typeof obj === 'number'
 }
 
-export function easeInOutQuad (t, b, c, d) {
+export function easeInOutQuad(t, b, c, d) {
   t /= d / 2
   if (t < 1) {
     return c / 2 * t * t + b
@@ -32,7 +32,7 @@ export function easeInOutQuad (t, b, c, d) {
   return -c / 2 * (t * (t - 2) - 1) + b
 }
 
-export function scrollTo (element, to, duration, direction = 'scrollTop') {
+export function scrollTo(element, to, duration, direction = 'scrollTop') {
   const start = element[direction]
   const change = to - start
   const increment = 20

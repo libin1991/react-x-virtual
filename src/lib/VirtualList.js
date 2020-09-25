@@ -28,14 +28,14 @@ class VirtualList extends React.PureComponent {
     lowerThreshold: 50,
     scrollEventThrottle: 10,
     initialScrollIndex: 0,
-    onScroll: () => {},
-    onStartScroll: () => {},
-    onEndScroll: () => {},
-    onScrollToUpper: () => {},
-    onScrollToLower: () => {}
+    onScroll: () => { },
+    onStartScroll: () => { },
+    onEndScroll: () => { },
+    onScrollToUpper: () => { },
+    onScrollToLower: () => { }
   }
 
-  constructor () {
+  constructor() {
     super(...arguments)
     const {
       scrollX,
@@ -87,7 +87,7 @@ class VirtualList extends React.PureComponent {
     this.throttleScroll = throttle(onScroll, scrollEventThrottle)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { scrollTo } = this.props
 
     if (isNumber(scrollTo)) {
@@ -101,11 +101,11 @@ class VirtualList extends React.PureComponent {
     })
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.rootNodeRef.current.removeEventListener('scroll', this._handleScroll)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       itemCount,
       itemSize,
@@ -160,7 +160,7 @@ class VirtualList extends React.PureComponent {
     }
   }
 
-  componentDidUpdate (_, prevState) {
+  componentDidUpdate(_, prevState) {
     const { offset, scrollChangeReason } = this.state
     if (
       prevState.offset !== offset &&
@@ -170,7 +170,7 @@ class VirtualList extends React.PureComponent {
     }
   }
 
-  scrollToPosition ({ position, smooth, alignTo }) {
+  scrollToPosition({ position, smooth, alignTo }) {
     const prevTotalSize = this.sizeAndPositionManager.getTotalSize()
     const offset = this.getOffsetForIndex(position, {
       none: ALIGNMENT.CENTER,
@@ -207,11 +207,11 @@ class VirtualList extends React.PureComponent {
     }
   }
 
-  _scrollTo (offset) {
+  _scrollTo(offset) {
     this.rootNodeRef.current[scrollProp[this.scrollDirection]] = offset
   }
 
-  _flushTotalSize (offset, callback) {
+  _flushTotalSize(offset, callback) {
     const prevOffset = this.state.offset
     this._scrollTo(offset)
     setTimeout(() => {
@@ -220,7 +220,7 @@ class VirtualList extends React.PureComponent {
     }, 0)
   }
 
-  _getTotalItemCount () {
+  _getTotalItemCount() {
     const sections = this.sections || Section.walkSectionChildren(
       React.Children.toArray(this.props.children),
       this.props.itemCount
@@ -228,7 +228,7 @@ class VirtualList extends React.PureComponent {
     return Section.getTotalSectionItemCount(sections)
   }
 
-  getOffsetForIndex (index, scrollToAlignment = ALIGNMENT.AUTO) {
+  getOffsetForIndex(index, scrollToAlignment = ALIGNMENT.AUTO) {
     let itemCount = this.sizeAndPositionManager.getTotalItemCount()
 
     if (itemCount === 0) {
@@ -249,7 +249,7 @@ class VirtualList extends React.PureComponent {
     })
   }
 
-  recomputeSizes (startIndex = 0) {
+  recomputeSizes(startIndex = 0) {
     this.styleCache = {}
     this.sizeAndPositionManager.resetItem(startIndex)
   }
@@ -298,11 +298,11 @@ class VirtualList extends React.PureComponent {
     this.throttleScroll(event, offset)
   }
 
-  _getNodeOffset () {
+  _getNodeOffset() {
     return this.rootNodeRef.current[scrollProp[this.scrollDirection]]
   }
 
-  _getEstimatedItemSize (props = this.props) {
+  _getEstimatedItemSize(props = this.props) {
     const defaultEstimatedItemSize = 50
 
     return (
@@ -310,7 +310,7 @@ class VirtualList extends React.PureComponent {
     )
   }
 
-  _getSize (index, itemSize) {
+  _getSize(index, itemSize) {
     if (typeof itemSize === 'function') {
       return itemSize(index)
     }
@@ -319,7 +319,7 @@ class VirtualList extends React.PureComponent {
     return Array.isArray(itemSize) ? itemSize[index] : (itemSize || defaultItemSize)
   }
 
-  _getStyle ({index, sticky, isCached}) {
+  _getStyle({ index, sticky, isCached }) {
     const style = this.styleCache[index]
     const sizePropName = sizeProp[this.scrollDirection]
     const positionPropName = positionProp[this.scrollDirection]
@@ -391,6 +391,7 @@ class VirtualList extends React.PureComponent {
           items.push(
             React.createElement(VirtualHeader.type, {
               ...VirtualHeader.props,
+              key: `virtual-section-header-${sectionIndex}`,
               style: Header.getAttachStyle({
                 props: VirtualHeader.props,
                 index,
@@ -401,7 +402,7 @@ class VirtualList extends React.PureComponent {
           )
         }
         if (VirtualCell) {
-          const itemIndex = Section.getSectionItemIndex({sections, sectionIndex, index})
+          const itemIndex = Section.getSectionItemIndex({ sections, sectionIndex, index })
           const virtualIndex = index
           const itemStyle = this._getStyle({
             index,
@@ -410,6 +411,7 @@ class VirtualList extends React.PureComponent {
           })
           const CellComponent = React.createElement(VirtualCell.type, {
             ...VirtualCell.props,
+            key: virtualIndex,
             virtualIndex,
             index: itemIndex,
             style: itemStyle
@@ -430,6 +432,7 @@ class VirtualList extends React.PureComponent {
           items.push(
             React.createElement(VirtualFooter.type, {
               ...VirtualFooter.props,
+              key: `virtual-section-footer-${sectionIndex}`,
               style: Footer.getAttachStyle({
                 props: VirtualFooter.props,
                 index,
@@ -445,7 +448,7 @@ class VirtualList extends React.PureComponent {
     return items
   }
 
-  render () {
+  render() {
     const { style, width, height } = this.props
     const items = this._getItems()
     const totalSize = this.sizeAndPositionManager.getTotalSize()
@@ -460,10 +463,10 @@ class VirtualList extends React.PureComponent {
 
     return (
       <div
-        ref={this.rootNodeRef}
-        className={classNames('taro-virtual-list', this.props.className)}
-        style={wrapperStyle}>
-        <div ref={this.scrollWrapperNodeRef} style={innerStyle}>{items}</div>
+        ref={ this.rootNodeRef }
+        className={ classNames('taro-virtual-list', this.props.className) }
+        style={ wrapperStyle }>
+        <div ref={ this.scrollWrapperNodeRef } style={ innerStyle }>{ items }</div>
       </div>
     )
   }

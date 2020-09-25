@@ -2,7 +2,7 @@ import SlotManager from './SlotManager'
 import { ALIGNMENT } from './constants'
 
 export default class SizeAndPositionManager {
-  constructor ({ itemCount, itemSizeGetter, estimatedItemSize }) {
+  constructor({ itemCount, itemSizeGetter, estimatedItemSize }) {
     this.itemSizeGetter = itemSizeGetter
     this.itemCount = itemCount
     this.estimatedItemSize = estimatedItemSize
@@ -17,16 +17,16 @@ export default class SizeAndPositionManager {
     this.slotManager = new SlotManager()
   }
 
-  getTotalItemCount () {
+  getTotalItemCount() {
     return this.itemCount
   }
 
-  setTotalItemCount (totalItemCount) {
+  setTotalItemCount(totalItemCount) {
     this.itemCount = totalItemCount
   }
 
   // Hot update config
-  updateConfig ({ itemCount, itemSizeGetter, estimatedItemSize }) {
+  updateConfig({ itemCount, itemSizeGetter, estimatedItemSize }) {
     if (itemCount != null) {
       this.itemCount = itemCount
     }
@@ -38,7 +38,7 @@ export default class SizeAndPositionManager {
     }
   }
 
-  getLastMeasuredIndex () {
+  getLastMeasuredIndex() {
     return this.lastMeasuredIndex
   }
 
@@ -46,7 +46,7 @@ export default class SizeAndPositionManager {
    * This method returns the size and position for the item at the specified index.
    * It just-in-time calculates (or used cached values) for items leading up to the index.
    */
-  getSizeAndPositionForIndex (index) {
+  getSizeAndPositionForIndex(index) {
     if (index < 0 || index >= this.itemCount) {
       throw Error(
         `Requested index ${index} is outside of range 0..${this.itemCount}`
@@ -88,7 +88,7 @@ export default class SizeAndPositionManager {
     return this.itemSizeAndPositionData[index]
   }
 
-  getSizeAndPositionOfLastMeasuredItem () {
+  getSizeAndPositionOfLastMeasuredItem() {
     if (this.lastMeasuredIndex >= 0) {
       return this.itemSizeAndPositionData[this.lastMeasuredIndex]
     } else {
@@ -101,7 +101,7 @@ export default class SizeAndPositionManager {
    * This value will be completedly estimated initially.
    * As items as measured the estimate will be updated.
    */
-  getTotalSize () {
+  getTotalSize() {
     const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem()
     const totalItemSize =
       lastMeasuredSizeAndPosition.offset +
@@ -125,7 +125,7 @@ export default class SizeAndPositionManager {
    * @param containerSize Size (width or height) of the container viewport
    * @return Offset to use to ensure the specified item is visible
    */
-  getUpdatedOffsetForIndex ({ align = ALIGNMENT.START, containerSize, currentOffset, targetIndex }) {
+  getUpdatedOffsetForIndex({ align = ALIGNMENT.START, containerSize, currentOffset, targetIndex }) {
     if (containerSize <= 0) {
       return 0
     }
@@ -155,7 +155,7 @@ export default class SizeAndPositionManager {
     return Math.max(0, Math.min(totalSize - containerSize, idealOffset))
   }
 
-  getVisibleRange ({ containerSize, offset, overscanCount }) {
+  getVisibleRange({ containerSize, offset, overscanCount }) {
     const totalSize = this.getTotalSize()
 
     if (totalSize === 0) {
@@ -192,7 +192,7 @@ export default class SizeAndPositionManager {
    * This method should be called for any item that has changed its size.
    * It will not immediately perform any calculations; they'll be performed the next time getSizeAndPositionForIndex() is called.
    */
-  resetItem (index) {
+  resetItem(index) {
     this.lastMeasuredIndex = Math.min(this.lastMeasuredIndex, index - 1)
   }
 
@@ -202,7 +202,7 @@ export default class SizeAndPositionManager {
    * If no exact match is found the next lowest item index will be returned.
    * This allows partially visible items (with offsets just before/above the fold) to be visible.
    */
-  findNearestItem (offset) {
+  findNearestItem(offset) {
     if (isNaN(offset)) {
       throw Error(`Invalid offset ${offset} specified`)
     }
@@ -231,7 +231,7 @@ export default class SizeAndPositionManager {
     }
   }
 
-  binarySearch ({ low, high, offset }) {
+  binarySearch({ low, high, offset }) {
     let middle = 0
     let currentOffset = 0
 
@@ -255,7 +255,7 @@ export default class SizeAndPositionManager {
     return 0
   }
 
-  exponentialSearch ({ index, offset }) {
+  exponentialSearch({ index, offset }) {
     let interval = 1
     while (index < this.itemCount && this.getSizeAndPositionForIndex(index).offset < offset) {
       index += interval

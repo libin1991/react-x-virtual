@@ -70,7 +70,7 @@ class Section extends React.PureComponent {
 
     return finalChildren
   }
-  static setSectionSlotToManager = ({sections, scrollDirection, sizeAndPositionManager}) => {
+  static setSectionSlotToManager = ({ sections, scrollDirection, sizeAndPositionManager }) => {
     const sizePropName = sizeProp[scrollDirection]
 
     sections.forEach((sec, index) => {
@@ -94,7 +94,7 @@ class Section extends React.PureComponent {
 
     return [section, targetIndex]
   }
-  static getSectionItemIndex = ({sections, sectionIndex, index}) => {
+  static getSectionItemIndex = ({ sections, sectionIndex, index }) => {
     if (sectionIndex === 0) {
       return index
     }
@@ -108,19 +108,21 @@ class Section extends React.PureComponent {
     }, 0)
   }
 
-  constructor () {
+  constructor() {
     super(...arguments)
     this.wrapperRef = React.createRef(null)
   }
 
-  render () {
+  render() {
     const {
       children, ...props
     } = this.props
 
     return (
-      <div ref={this.wrapperRef} className={classNames('taro-virtual-list--section', props.className)}>
-        {children}
+      <div
+        ref={ this.wrapperRef }
+        className={ classNames('taro-virtual-list--section', props.className) }>
+        { children }
       </div>
     )
   }

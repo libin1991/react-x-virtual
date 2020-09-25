@@ -1,17 +1,17 @@
 export default class SlotManager {
-  constructor () {
+  constructor() {
     this.slots = []
   }
 
-  size () {
+  size() {
     return this.slots.length
   }
 
-  getSlot (index) {
+  getSlot(index) {
     return this.slots[index]
   }
 
-  insertSlot (index, curSlot) {
+  insertSlot(index, curSlot) {
     const prevSlot = this.slots[index]
 
     this.slots[index] = {
@@ -19,11 +19,11 @@ export default class SlotManager {
     }
   }
 
-  getTotalSlotSize () {
+  getTotalSlotSize() {
     return this.getAggregateSlotSizeToIndex(this.size())
   }
 
-  getAggregateSlotSizeToIndex (index) {
+  getAggregateSlotSizeToIndex(index) {
     if (index < 1 || this.size() === 0) {
       return 0
     }
@@ -33,7 +33,7 @@ export default class SlotManager {
     }, 0)
   }
 
-  getRestSlotSizeToIndex (slotIndex, index) {
+  getRestSlotSizeToIndex(slotIndex, index) {
     const size = this.size()
 
     if (slotIndex === size || slotIndex < 0) {
@@ -52,7 +52,7 @@ export default class SlotManager {
     return aggregateSize
   }
 
-  findSlotIndexByItemIndex (index) {
+  findSlotIndexByItemIndex(index) {
     const size = this.size()
 
     if (size === 0 || index < 0 || index >= this.slots[size - 1].end) {
