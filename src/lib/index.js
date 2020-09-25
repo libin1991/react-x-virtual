@@ -1,8 +1,9 @@
-import Example from './components/Example';
-import SecondExample from './components/SecondExample';
+import VirtualList from './VirtualList'
+import Section from './Section'
+import Header from './Header'
+import Footer from './Footer'
 
-export default Example;
-
+export default VirtualList
 export {
-  SecondExample,
-};
+  VirtualList, Section, Header, Footer
+}
