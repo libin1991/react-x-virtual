@@ -39,6 +39,8 @@ class Header extends React.PureComponent {
       children, style, ...props
     } = this.props
 
+    console.log('Header', props)
+
     return (
       <div
         ref={ this.wrapperRef }
