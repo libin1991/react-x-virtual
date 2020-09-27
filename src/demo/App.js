@@ -2,6 +2,11 @@ import React from 'react';
 import VirtualList from '../lib';
 import { getRandSize } from './util'
 
+const {
+  Header: VirtualHeader,
+  Footer: VirtualFooter,
+  Section: VirtualSection
+} = VirtualList
 
 class ContentTextBox extends React.Component {
   render() {
@@ -154,11 +159,11 @@ class App extends React.Component {
         </div>
 
         <VirtualList
+          ref={ this.vlistRef }
+          className="VirtualList"
           scrollX
           width={ 600 }
           height={ 200 }
-          ref={ this.vlistRef }
-          className="VirtualList"
           initialRows={ 8 }
           initialScrollIndex={ this.initialScrollIndex }
           scrollTo={ scrollToIndex }
@@ -173,35 +178,27 @@ class App extends React.Component {
           scrollToAlignment="end"
           itemSize={ this.getVarItemSize }
         >
-          <VirtualList.Section itemCount={ 2050 }>
-            <VirtualList.Header width={ 100 }>
+          <VirtualSection itemCount={ 2050 }>
+            <VirtualHeader width={ 100 }>
               <div className="ContentTextBox">
                 <p>First Header</p>
               </div>
-            </VirtualList.Header>
+            </VirtualHeader>
             <Row>First Section Row</Row>
-            <VirtualList.Footer width={ 120 }>
+            <VirtualFooter width={ 120 }>
               <ContentTextBox tag="section-1" />
-            </VirtualList.Footer>
-          </VirtualList.Section>
-          <VirtualList.Section itemCount={ 1500 }>
-            <VirtualList.Header width={ 150 }>
+            </VirtualFooter>
+          </VirtualSection>
+
+          <VirtualSection itemCount={ 1500 }>
+            <VirtualHeader width={ 150 }>
               <ContentTextBox tag="section-2" />
-            </VirtualList.Header>
+            </VirtualHeader>
             <Row>Second Section Row</Row>
-            <VirtualList.Footer width={ 100 }>
+            <VirtualFooter width={ 100 }>
               <ContentTextBox tag="section-2" />
-            </VirtualList.Footer>
-          </VirtualList.Section>
-          <VirtualList.Section itemCount={ 100000 }>
-            <VirtualList.Header width={ 100 }>
-              <ContentTextBox tag="section-3" />
-            </VirtualList.Header>
-            <Row>Final Section Row</Row>
-            <VirtualList.Footer width={ 100 }>
-              <ContentTextBox tag="section-3" />
-            </VirtualList.Footer>
-          </VirtualList.Section>
+            </VirtualFooter>
+          </VirtualSection>
         </VirtualList>
       </div>
     );
