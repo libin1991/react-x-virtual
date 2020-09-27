@@ -121,7 +121,7 @@ class Section extends React.PureComponent {
     return (
       <div
         ref={ this.wrapperRef }
-        className={ classNames('taro-virtual-list--section', props.className) }>
+        className={ classNames('x-virtual-list--section', props.className) }>
         { children }
       </div>
     )

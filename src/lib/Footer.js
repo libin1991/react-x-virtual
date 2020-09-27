@@ -43,7 +43,7 @@ class Footer extends React.PureComponent {
       <div
         ref={ this.wrapperRef }
         style={ style }
-        className={ classNames('taro-virtual-list--footer', props.className) }>
+        className={ classNames('x-virtual-list--footer', props.className) }>
         { children }
       </div>
     )

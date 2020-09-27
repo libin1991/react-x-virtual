@@ -45,7 +45,7 @@ class Header extends React.PureComponent {
       <div
         ref={ this.wrapperRef }
         style={ style }
-        className={ classNames('taro-virtual-list--header', props.className) }>
+        className={ classNames('x-virtual-list--header', props.className) }>
         { children }
       </div>
     )

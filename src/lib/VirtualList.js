@@ -464,7 +464,7 @@ class VirtualList extends React.PureComponent {
     return (
       <div
         ref={ this.rootNodeRef }
-        className={ classNames('taro-virtual-list', this.props.className) }
+        className={ classNames('x-virtual-list', this.props.className) }
         style={ wrapperStyle }>
         <div ref={ this.scrollWrapperNodeRef } style={ innerStyle }>{ items }</div>
       </div>
