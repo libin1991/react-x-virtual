@@ -1,17 +1,29 @@
+/**
+ * SlotManager - 插槽管理器
+ *
+ * 用以处理 Section 中引入的 Header & Footer 带来的偏移计算
+ */
+
 export default class SlotManager {
-  constructor() {
+  constructor () {
     this.slots = []
   }
 
-  size() {
+  size () {
     return this.slots.length
   }
 
-  getSlot(index) {
+  getSlot (index) {
     return this.slots[index]
   }
 
-  insertSlot(index, curSlot) {
+  /**
+   * 新增/更新插槽对象
+   *
+   * @param {*} index 新增/更新的插槽索引
+   * @param {*} curSlot 插槽对象
+   */
+  insertSlot (index, curSlot) {
     const prevSlot = this.slots[index]
 
     this.slots[index] = {
@@ -19,11 +31,19 @@ export default class SlotManager {
     }
   }
 
-  getTotalSlotSize() {
+  /**
+   * 获取全部插槽累加尺寸
+   */
+  getTotalSlotSize () {
     return this.getAggregateSlotSizeToIndex(this.size())
   }
 
-  getAggregateSlotSizeToIndex(index) {
+  /**
+   * 返回到对应索引的所有插槽的累加尺寸
+   *
+   * @param {*} index 插槽索引
+   */
+  getAggregateSlotSizeToIndex (index) {
     if (index < 1 || this.size() === 0) {
       return 0
     }
@@ -33,7 +53,13 @@ export default class SlotManager {
     }, 0)
   }
 
-  getRestSlotSizeToIndex(slotIndex, index) {
+  /**
+   * 返回从对应索引开始之后的所有插槽的累加尺寸
+   *
+   * @param {*} slotIndex 插槽索引
+   * @param {*} itemIndex 元素索引
+   */
+  getRestSlotSizeToIndex (slotIndex, itemIndex) {
     const size = this.size()
 
     if (slotIndex === size || slotIndex < 0) {
@@ -45,21 +71,26 @@ export default class SlotManager {
     }, 0)
 
     const slot = this.slots[slotIndex]
-    if (slot && index >= slot.start) {
+    if (slot && itemIndex >= slot.start) {
       return aggregateSize - slot.header
     }
 
     return aggregateSize
   }
 
-  findSlotIndexByItemIndex(index) {
+  /**
+   * 返回根据元素索引寻找命中的插槽的所有
+   *
+   * @param {*} itemIndex 元素索引
+   */
+  findSlotIndexByItemIndex (itemIndex) {
     const size = this.size()
 
-    if (size === 0 || index < 0 || index >= this.slots[size - 1].end) {
+    if (size === 0 || itemIndex < 0 || itemIndex >= this.slots[size - 1].end) {
       return -1
     }
     return this.slots.findIndex(slot => {
-      return index >= slot.start && index < slot.end
+      return itemIndex >= slot.start && itemIndex < slot.end
     })
   }
 }

@@ -1,32 +1,37 @@
+/**
+ * SizeAndPositionManager - 尺寸位置管理器
+ *
+ * 用以管理所有子项元素的尺寸、位置信息计算，解耦与视图之间的逻辑关联
+ */
 import SlotManager from './SlotManager'
 import { ALIGNMENT } from './constants'
 
 export default class SizeAndPositionManager {
-  constructor({ itemCount, itemSizeGetter, estimatedItemSize }) {
+  constructor ({ itemCount, itemSizeGetter, estimatedItemSize }) {
     this.itemSizeGetter = itemSizeGetter
     this.itemCount = itemCount
     this.estimatedItemSize = estimatedItemSize
 
-    // Cache of size and position data for items, mapped by item index.
+    // 建立以元素索引的哈希表，用以缓存列表子元素的尺寸和位置信息
     this.itemSizeAndPositionData = {}
 
-    // Measurements for items up to this index can be trusted; items afterward should be estimated.
+    // 记录已经测算尺寸的最近索引
+    // 在此索引之前的元素的测算信息可以信赖，在此索引之后的元素尺寸信息为预估信息
     this.lastMeasuredIndex = -1
 
-    // Size of header and footer slot
+    // 处理插槽（e.g. Header & Footer）信息的管理者对象
     this.slotManager = new SlotManager()
   }
 
-  getTotalItemCount() {
+  getTotalItemCount () {
     return this.itemCount
   }
 
-  setTotalItemCount(totalItemCount) {
+  setTotalItemCount (totalItemCount) {
     this.itemCount = totalItemCount
   }
 
-  // Hot update config
-  updateConfig({ itemCount, itemSizeGetter, estimatedItemSize }) {
+  updateConfig ({ itemCount, itemSizeGetter, estimatedItemSize }) {
     if (itemCount != null) {
       this.itemCount = itemCount
     }
@@ -38,15 +43,15 @@ export default class SizeAndPositionManager {
     }
   }
 
-  getLastMeasuredIndex() {
+  getLastMeasuredIndex () {
     return this.lastMeasuredIndex
   }
 
   /**
-   * This method returns the size and position for the item at the specified index.
-   * It just-in-time calculates (or used cached values) for items leading up to the index.
+   * 在运行时中从缓存的已计算索引位置开始遍历计算，直到匹配对应的索引
+   * 返回计算得出的对应元素尺寸、偏移位置
    */
-  getSizeAndPositionForIndex(index) {
+  getSizeAndPositionForIndex (index) {
     if (index < 0 || index >= this.itemCount) {
       throw Error(
         `Requested index ${index} is outside of range 0..${this.itemCount}`
@@ -88,7 +93,7 @@ export default class SizeAndPositionManager {
     return this.itemSizeAndPositionData[index]
   }
 
-  getSizeAndPositionOfLastMeasuredItem() {
+  getSizeAndPositionOfLastMeasuredItem () {
     if (this.lastMeasuredIndex >= 0) {
       return this.itemSizeAndPositionData[this.lastMeasuredIndex]
     } else {
@@ -97,11 +102,10 @@ export default class SizeAndPositionManager {
   }
 
   /**
-   * Total size of all items being measured.
-   * This value will be completedly estimated initially.
-   * As items as measured the estimate will be updated.
+   * 计算得出所有元素的叠加尺寸
+   * 注意此方法在初始时得到的尺寸信息完全为预估（依赖 itemSize 以及 estimatedItemSize），之后逐渐动态更新替换预估值
    */
-  getTotalSize() {
+  getTotalSize () {
     const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem()
     const totalItemSize =
       lastMeasuredSizeAndPosition.offset +
@@ -119,13 +123,13 @@ export default class SizeAndPositionManager {
   }
 
   /**
-   * Determines a new offset that ensures a certain item is visible, given the alignment.
+   * 返回对应索引的元素出现在容器视窗内，同时对齐配置的元素偏移位置
    *
-   * @param align Desired alignment within container; one of "start" (default), "center", or "end"
-   * @param containerSize Size (width or height) of the container viewport
-   * @return Offset to use to ensure the specified item is visible
+   * @param align 偏移对齐参数
+   * @param containerSize 容器视窗尺寸
+   * @return 元素出现在视窗内的偏移位置
    */
-  getUpdatedOffsetForIndex({ align = ALIGNMENT.START, containerSize, currentOffset, targetIndex }) {
+  getUpdatedOffsetForIndex ({ align = ALIGNMENT.START, containerSize, currentOffset, targetIndex }) {
     if (containerSize <= 0) {
       return 0
     }
@@ -155,7 +159,7 @@ export default class SizeAndPositionManager {
     return Math.max(0, Math.min(totalSize - containerSize, idealOffset))
   }
 
-  getVisibleRange({ containerSize, offset, overscanCount }) {
+  getVisibleRange ({ containerSize, offset, overscanCount }) {
     const totalSize = this.getTotalSize()
 
     if (totalSize === 0) {
@@ -188,42 +192,39 @@ export default class SizeAndPositionManager {
   }
 
   /**
-   * Clear all cached values for items after the specified index.
-   * This method should be called for any item that has changed its size.
-   * It will not immediately perform any calculations; they'll be performed the next time getSizeAndPositionForIndex() is called.
+   * 清除该索引以后的所有缓存值
+   * 实际上此方法只修改索引，只有在下次触发 getSizeAndPositionForIndex 方法时才会实际更新计算
    */
-  resetItem(index) {
+  resetItem (index) {
     this.lastMeasuredIndex = Math.min(this.lastMeasuredIndex, index - 1)
   }
 
   /**
-   * Searches for the item (index) nearest the specified offset.
-   *
-   * If no exact match is found the next lowest item index will be returned.
-   * This allows partially visible items (with offsets just before/above the fold) to be visible.
+   * 返回最匹配此偏移位置的子元素索引
+   * 如果没有准确的匹配，则返回最接近偏移位置的元素索引
    */
-  findNearestItem(offset) {
+  findNearestItem (offset) {
     if (isNaN(offset)) {
       throw Error(`Invalid offset ${offset} specified`)
     }
-    // Our search algorithms find the nearest match at or below the specified offset.
-    // So make sure the offset is at least 0 or no match will be found.
+
+    // 算法会搜索最近的匹配，或者小于（最接近）指定的偏移位置
+    // 因此偏移至少都应该是 0，否则无法匹配
     offset = Math.max(0, offset)
 
     const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem()
     const lastMeasuredIndex = Math.max(0, this.lastMeasuredIndex)
 
     if (lastMeasuredSizeAndPosition.offset >= offset) {
-      // If we've already measured items within this range just use a binary search as it's faster.
+      // 在已经缓存计算过的区域，使用二分搜索
       return this.binarySearch({
         high: lastMeasuredIndex,
         low: 0,
         offset
       })
     } else {
-      // If we haven't yet measured this high, fallback to an exponential search with an inner binary search.
-      // The exponential search avoids pre-computing sizes for the full set of items as a binary search would.
-      // The overall complexity for this approach is O(log n).
+      // 如果是尚未缓存计算过的区域，使用指数搜索定位最接近的范围，然后再使用二分搜索
+      // 指数搜索避免了不必要的计算量，提高了计算速度
       return this.exponentialSearch({
         index: lastMeasuredIndex,
         offset
@@ -231,7 +232,7 @@ export default class SizeAndPositionManager {
     }
   }
 
-  binarySearch({ low, high, offset }) {
+  binarySearch ({ low, high, offset }) {
     let middle = 0
     let currentOffset = 0
 
@@ -255,7 +256,7 @@ export default class SizeAndPositionManager {
     return 0
   }
 
-  exponentialSearch({ index, offset }) {
+  exponentialSearch ({ index, offset }) {
     let interval = 1
     while (index < this.itemCount && this.getSizeAndPositionForIndex(index).offset < offset) {
       index += interval

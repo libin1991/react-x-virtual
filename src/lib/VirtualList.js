@@ -28,14 +28,14 @@ class VirtualList extends React.PureComponent {
     lowerThreshold: 50,
     scrollEventThrottle: 10,
     initialScrollIndex: 0,
-    onScroll: () => { },
-    onStartScroll: () => { },
-    onEndScroll: () => { },
-    onScrollToUpper: () => { },
-    onScrollToLower: () => { }
+    onScroll: () => {},
+    onStartScroll: () => {},
+    onEndScroll: () => {},
+    onScrollToUpper: () => {},
+    onScrollToLower: () => {}
   }
 
-  constructor() {
+  constructor () {
     super(...arguments)
     const {
       scrollX,
@@ -82,12 +82,10 @@ class VirtualList extends React.PureComponent {
     this.styleCache = {}
     this.rootNodeRef = React.createRef(null)
     this.scrollWrapperNodeRef = React.createRef(null)
-
-    // The throttle inner onScroll event
     this.throttleScroll = throttle(onScroll, scrollEventThrottle)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { scrollTo } = this.props
 
     if (isNumber(scrollTo)) {
@@ -101,11 +99,11 @@ class VirtualList extends React.PureComponent {
     })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.rootNodeRef.current.removeEventListener('scroll', this._handleScroll)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       itemCount,
       itemSize,
@@ -124,7 +122,7 @@ class VirtualList extends React.PureComponent {
       nextProps.itemSize !== itemSize ||
       nextProps.estimatedItemSize !== estimatedItemSize
 
-    // Regenerate throttle scroll function
+    // 动态生成节流函数
     if (nextProps.scrollEventThrottle !== scrollEventThrottle) {
       this.throttleScroll = throttle(onScroll, nextProps.scrollEventThrottle)
     }
@@ -160,7 +158,7 @@ class VirtualList extends React.PureComponent {
     }
   }
 
-  componentDidUpdate(_, prevState) {
+  componentDidUpdate (_, prevState) {
     const { offset, scrollChangeReason } = this.state
     if (
       prevState.offset !== offset &&
@@ -170,7 +168,7 @@ class VirtualList extends React.PureComponent {
     }
   }
 
-  scrollToPosition({ position, smooth, alignTo }) {
+  scrollToPosition ({ position, smooth = false, alignTo }) {
     const prevTotalSize = this.sizeAndPositionManager.getTotalSize()
     const offset = this.getOffsetForIndex(position, {
       none: ALIGNMENT.CENTER,
@@ -183,7 +181,7 @@ class VirtualList extends React.PureComponent {
     if (!element) {
       return
     }
-    // If scrollToOptions is supported, use it first to achieve high performance
+    // 如果浏览器默认支持 ScrollToOptions，则使用原生滚动，从而达到更流畅的效果
     // https://developer.mozilla.org/zh-CN/docs/Web/API/ScrollToOptions/behavior
     if (typeof element.scroll === 'function') {
       const DOMScroll = () => {
@@ -207,11 +205,11 @@ class VirtualList extends React.PureComponent {
     }
   }
 
-  _scrollTo(offset) {
+  _scrollTo (offset) {
     this.rootNodeRef.current[scrollProp[this.scrollDirection]] = offset
   }
 
-  _flushTotalSize(offset, callback) {
+  _flushTotalSize (offset, callback) {
     const prevOffset = this.state.offset
     this._scrollTo(offset)
     setTimeout(() => {
@@ -220,7 +218,7 @@ class VirtualList extends React.PureComponent {
     }, 0)
   }
 
-  _getTotalItemCount() {
+  _getTotalItemCount () {
     const sections = this.sections || Section.walkSectionChildren(
       React.Children.toArray(this.props.children),
       this.props.itemCount
@@ -228,7 +226,7 @@ class VirtualList extends React.PureComponent {
     return Section.getTotalSectionItemCount(sections)
   }
 
-  getOffsetForIndex(index, scrollToAlignment = ALIGNMENT.AUTO) {
+  getOffsetForIndex (index, scrollToAlignment = ALIGNMENT.AUTO) {
     let itemCount = this.sizeAndPositionManager.getTotalItemCount()
 
     if (itemCount === 0) {
@@ -249,7 +247,7 @@ class VirtualList extends React.PureComponent {
     })
   }
 
-  recomputeSizes(startIndex = 0) {
+  recomputeSizes (startIndex = 0) {
     this.styleCache = {}
     this.sizeAndPositionManager.resetItem(startIndex)
   }
@@ -275,12 +273,11 @@ class VirtualList extends React.PureComponent {
       scrollChangeReason: SCROLL_CHANGE_REASON.OBSERVED
     })
 
-    // Use timer to watch scrolling state
     if (!this._scrollWatchTimer) {
       this.props.onStartScroll(event, offset)
     }
 
-    // Intended to delay 300ms to detect user action
+    // 使用延时 300ms 检测用户行为，从而准确触发 onEndScroll
     const DELAY = 300
     this._scrollWatchTimer = setTimeout(() => {
       this.props.onEndScroll(event, offset)
@@ -298,11 +295,11 @@ class VirtualList extends React.PureComponent {
     this.throttleScroll(event, offset)
   }
 
-  _getNodeOffset() {
+  _getNodeOffset () {
     return this.rootNodeRef.current[scrollProp[this.scrollDirection]]
   }
 
-  _getEstimatedItemSize(props = this.props) {
+  _getEstimatedItemSize (props = this.props) {
     const defaultEstimatedItemSize = 50
 
     return (
@@ -310,7 +307,7 @@ class VirtualList extends React.PureComponent {
     )
   }
 
-  _getSize(index, itemSize) {
+  _getSize (index, itemSize) {
     if (typeof itemSize === 'function') {
       return itemSize(index)
     }
@@ -319,11 +316,12 @@ class VirtualList extends React.PureComponent {
     return Array.isArray(itemSize) ? itemSize[index] : (itemSize || defaultItemSize)
   }
 
-  _getStyle({ index, sticky, isCached }) {
+  _getStyle ({index, sticky, isCached}) {
     const style = this.styleCache[index]
     const sizePropName = sizeProp[this.scrollDirection]
     const positionPropName = positionProp[this.scrollDirection]
 
+    // 使用缓存，减少样式计算性能损耗
     if (style && isCached) {
       return style
     }
@@ -402,7 +400,7 @@ class VirtualList extends React.PureComponent {
           )
         }
         if (VirtualCell) {
-          const itemIndex = Section.getSectionItemIndex({ sections, sectionIndex, index })
+          const itemIndex = Section.getSectionItemIndex({sections, sectionIndex, index})
           const virtualIndex = index
           const itemStyle = this._getStyle({
             index,
@@ -448,7 +446,7 @@ class VirtualList extends React.PureComponent {
     return items
   }
 
-  render() {
+  render () {
     const { style, width, height } = this.props
     const items = this._getItems()
     const totalSize = this.sizeAndPositionManager.getTotalSize()
@@ -463,10 +461,10 @@ class VirtualList extends React.PureComponent {
 
     return (
       <div
-        ref={ this.rootNodeRef }
-        className={ classNames('x-virtual-list', this.props.className) }
-        style={ wrapperStyle }>
-        <div ref={ this.scrollWrapperNodeRef } style={ innerStyle }>{ items }</div>
+        ref={this.rootNodeRef}
+        className={classNames('taro-virtual-list', this.props.className)}
+        style={wrapperStyle}>
+        <div ref={this.scrollWrapperNodeRef} style={innerStyle}>{items}</div>
       </div>
     )
   }
