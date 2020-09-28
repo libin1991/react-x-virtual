@@ -1,3 +1,45 @@
+## 如何使用？
+
+```bash
+npm i react-x-virtual
+```
+
+```jsx
+import React from 'react';
+import VirtualList from 'react-x-virtual';
+
+const {
+  Header: VirtualHeader,
+  Footer: VirtualFooter,
+  Section: VirtualSection,
+} = VirtualList;
+
+// JSX
+<VirtualList {...mixinProps} ref={vlistRef} scrollX width={600} height={200}>
+  <VirtualSection itemCount={2050}>
+    <VirtualHeader width={100}>
+      <div className="ContentTextBox">
+        <p>First Header</p>
+      </div>
+    </VirtualHeader>
+    <Row>First Section Row</Row>
+    <VirtualFooter width={120}>
+      <ContentTextBox tag="section-1" />
+    </VirtualFooter>
+  </VirtualSection>
+
+  <VirtualSection itemCount={1500}>
+    <VirtualHeader width={150}>
+      <ContentTextBox tag="section-2" />
+    </VirtualHeader>
+    <Row>Second Section Row</Row>
+    <VirtualFooter width={100}>
+      <ContentTextBox tag="section-2" />
+    </VirtualFooter>
+  </VirtualSection>
+</VirtualList>;
+```
+
 ## API
 
 ```ts
